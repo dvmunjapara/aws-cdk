@@ -8,7 +8,7 @@ import {
 import {promises as fs} from "fs";
 import path from "path";
 import crypto from "crypto";
-import * as grpc from "grpc";
+import * as grpc from "@grpc/grpc-js";
 import { TextDecoder } from "util";
 
 const utf8Decoder = new TextDecoder();
