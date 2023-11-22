@@ -9,6 +9,7 @@ import {ConfigProps} from "./config";
 import {StackProps} from "aws-cdk-lib";
 import * as ApiGW from 'aws-cdk-lib/aws-apigateway';
 import * as IAM from 'aws-cdk-lib/aws-iam';
+import {sqsResponseTemplate} from "./templates/sqs-response.template";
 
 type AwsEnvStackProps = StackProps & {
   config: Readonly<ConfigProps>;
@@ -33,6 +34,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     queue.grantSendMessages(apigatewayRole);
 
+    /*
     const sendMessageIntegration = new ApiGW.AwsIntegration({
       service: 'sqs',
       path: `${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}`,
@@ -75,7 +77,55 @@ export class HyperledgerWorkerStack extends cdk.Stack {
           statusCode: '500',
         }
       ]
+    });*/
+
+
+    const integrationResponse: ApiGW.IntegrationResponse = {
+      statusCode: "200",
+      responseTemplates: {
+        "application/json": sqsResponseTemplate,
+      },
+    };
+
+    const restApi = new ApiGW.RestApi(this, "API Endpoint", {
+      deployOptions: {
+        stageName: "sandbox",
+      },
+      restApiName: "APIGWtoSQSApi",
     });
+
+    const integration = new ApiGW.AwsIntegration({
+      service: "sqs",
+      path: `${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}`,
+      integrationHttpMethod: "POST",
+      options: {
+        credentialsRole: apigatewayRole,
+        requestParameters: {
+          'integration.request.header.Content-Type': `'application/json'`,
+        },
+        requestTemplates: {
+          "application/json": `Action=SendMessage&MessageBody=$input.body`,
+        },
+        integrationResponses: [integrationResponse]
+      },
+    });
+
+    const methodResponse: ApiGW.MethodResponse = {
+      statusCode: "200",
+      responseModels: { "application/json": ApiGW.Model.EMPTY_MODEL },
+    };
+
+    const methodOptions: ApiGW.MethodOptions = {
+      methodResponses: [methodResponse],
+      operationName: 'store-transaction',
+      authorizationType: ApiGW.AuthorizationType.NONE,
+    }
+
+    restApi.root.addMethod(
+      "POST",
+      integration,
+      methodOptions
+    );
 
     const vpc = ec2.Vpc.fromLookup(this, 'myVPC', {
       vpcId: 'vpc-05093ee4e6f5e5259',
