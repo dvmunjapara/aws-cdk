@@ -21,6 +21,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       handler: 'index.handler',
       functionName: 'SqsMessageHandler',
       runtime: Runtime.NODEJS_18_X,
+      timeout: cdk.Duration.minutes(5),
       bundling: {
         nodeModules: [
           '@hyperledger/fabric-gateway',
