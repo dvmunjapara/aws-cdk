@@ -2,8 +2,11 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { HyperledgerWorkerStack } from '../lib/hyperledger-worker-stack';
+import { getConfig } from "../lib/config";
 
 const app = new cdk.App();
+const config = getConfig();
+
 new HyperledgerWorkerStack(app, 'HyperledgerWorkerStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
@@ -15,7 +18,8 @@ new HyperledgerWorkerStack(app, 'HyperledgerWorkerStack', {
 
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
-  env: { account: '310752562600', region: 'us-west-2' },
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: config.REGION },
 
+  config
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });

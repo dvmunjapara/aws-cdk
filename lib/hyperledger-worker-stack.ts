@@ -5,10 +5,18 @@ import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
 import * as ec2 from "aws-cdk-lib/aws-ec2"
+import {ConfigProps, getConfig} from "../lib/config";
+import {StackProps} from "aws-cdk-lib";
+
+type AwsEnvStackProps = StackProps & {
+  config: Readonly<ConfigProps>;
+};
 
 export class HyperledgerWorkerStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: AwsEnvStackProps, ) {
     super(scope, id, props);
+
+    const { config } = props;
 
     const queue = new sqs.Queue(this, 'HyperledgerWorkerQueue', {
       visibilityTimeout: cdk.Duration.minutes(5),
@@ -28,6 +36,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
+      environment: config,
       bundling: {
         nodeModules: [
           '@hyperledger/fabric-gateway',
