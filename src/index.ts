@@ -20,10 +20,11 @@ exports.handler = async (event: any) => {
 
     const id: string = '536281324';
 
-    const contract = await buildChannel();
-
     try {
       console.log({ id })
+
+      const contract = await buildChannel();
+      console.log({ contract })
       const resultBytes = await contract.evaluateTransaction("ReadMedia", id);
       console.log({ data: parseBuffer(resultBytes) });
     } catch (e: any) {
