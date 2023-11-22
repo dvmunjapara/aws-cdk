@@ -5,8 +5,10 @@ import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
 import * as ec2 from "aws-cdk-lib/aws-ec2"
-import {ConfigProps, getConfig} from "../lib/config";
+import {ConfigProps} from "./config";
 import {StackProps} from "aws-cdk-lib";
+import * as ApiGW from 'aws-cdk-lib/aws-apigateway';
+import * as IAM from 'aws-cdk-lib/aws-iam';
 
 type AwsEnvStackProps = StackProps & {
   config: Readonly<ConfigProps>;
@@ -18,11 +20,59 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     const { config } = props;
 
+    const apigatewayRole = new IAM.Role(this, 'apigateway-role', {
+      assumedBy: new IAM.ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
     const queue = new sqs.Queue(this, 'HyperledgerWorkerQueue', {
       visibilityTimeout: cdk.Duration.minutes(5),
       fifo: true,
       deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
       fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID
+    });
+
+    queue.grantSendMessages(apigatewayRole);
+
+    const sendMessageIntegration = new ApiGW.AwsIntegration({
+      service: 'sqs',
+      path: `${process.env.CDK_DEFAULT_ACCOUNT}/store-transaction`,
+      integrationHttpMethod: 'POST',
+      options: {
+        credentialsRole: apigatewayRole,
+        requestParameters: {
+          'integration.request.header.Content-Type': `'application/json'`,
+        },
+        requestTemplates: {
+          'application/json': 'Action=SendMessage&MessageBody=$input.body',
+        },
+        integrationResponses: [
+          {
+            statusCode: '200',
+          },
+          {
+            statusCode: '400',
+          },
+          {
+            statusCode: '500',
+          }
+        ]
+      },
+    });
+
+    const api = new ApiGW.RestApi(this, 'api', {});
+
+    api.root.addMethod('POST', sendMessageIntegration, {
+      methodResponses: [
+        {
+          statusCode: '400',
+        },
+        {
+          statusCode: '200',
+        },
+        {
+          statusCode: '500',
+        }
+      ]
     });
 
     const vpc = ec2.Vpc.fromLookup(this, 'myVPC', {

@@ -20,6 +20,8 @@ new HyperledgerWorkerStack(app, 'HyperledgerWorkerStack', {
    * want to deploy the stack to. */
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: config.REGION },
 
+
+  /* Environment variables*/
   config
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+
 });
