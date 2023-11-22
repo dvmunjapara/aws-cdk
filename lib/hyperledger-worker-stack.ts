@@ -32,7 +32,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
         commandHooks: {
           beforeBundling(inputDir: string, outputDir: string): string[] {
             return [
-              `cp -r ${inputDir}/certs ${outputDir}/certs`,
+              `cp -r ${inputDir}/storage/certs ${outputDir}/certs`,
             ];
           },
           afterBundling(inputDir: string, outputDir: string): string[] {
