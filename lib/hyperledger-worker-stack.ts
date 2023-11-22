@@ -121,7 +121,9 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       authorizationType: ApiGW.AuthorizationType.NONE,
     }
 
-    restApi.root.addMethod(
+    const resource = restApi.root.resourceForPath('/store-transaction');
+
+    resource.addMethod(
       "POST",
       integration,
       methodOptions
