@@ -27,7 +27,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
           'fs',
           'path',
           'crypto',
-          'grpc'
+          '@grpc/grpc-js'
         ],
         commandHooks: {
           beforeBundling(inputDir: string, outputDir: string): string[] {
