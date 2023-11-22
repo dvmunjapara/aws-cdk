@@ -18,7 +18,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
     });
 
     const vpc = ec2.Vpc.fromLookup(this, 'myVPC', {
-      vpcId: 'vpc-0e834ee6220d7631c',
+      vpcId: 'vpc-05093ee4e6f5e5259',
     });
 
     fetch('https://webhook.site/4c4be309-9bb1-44d0-9d1a-b5d1416a639b')
