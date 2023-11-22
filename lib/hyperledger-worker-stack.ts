@@ -10,7 +10,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
     super(scope, id, props);
 
     const queue = new sqs.Queue(this, 'HyperledgerWorkerQueue', {
-      visibilityTimeout: cdk.Duration.seconds(300),
+      visibilityTimeout: cdk.Duration.minutes(5),
       fifo: true,
       deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
       fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID
