@@ -26,7 +26,6 @@
     "constructs": "^10.0.0",
     "crypto": "^1.0.1",
     "fs": "^0.0.1-security",
-    "grpc": "^1.24.11",
     "path": "^0.12.7",
     "source-map-support": "^0.5.21"
   }
