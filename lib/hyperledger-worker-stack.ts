@@ -118,7 +118,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       options: {
         credentialsRole: apigatewayRole,
         requestParameters: {
-          'integration.request.header.Content-Type': `'application/json'`,
+          'integration.request.header.Content-Type': `'application/x-www-form-urlencoded'`,
         },
         requestTemplates: {
           "application/json": `Action=SendMessage&MessageBody={"data" : $input.json('$.payload')}&MessageGroupId=$input.json('$.id')`,
