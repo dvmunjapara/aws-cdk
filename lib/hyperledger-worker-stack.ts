@@ -35,7 +35,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     const sendMessageIntegration = new ApiGW.AwsIntegration({
       service: 'sqs',
-      path: `${process.env.CDK_DEFAULT_ACCOUNT}/store-transaction`,
+      path: `${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}`,
       integrationHttpMethod: 'POST',
       options: {
         credentialsRole: apigatewayRole,
@@ -62,6 +62,8 @@ export class HyperledgerWorkerStack extends cdk.Stack {
     const api = new ApiGW.RestApi(this, 'api', {});
 
     api.root.addMethod('POST', sendMessageIntegration, {
+      operationName: 'store-transaction',
+      authorizationType: ApiGW.AuthorizationType.NONE,
       methodResponses: [
         {
           statusCode: '400',
