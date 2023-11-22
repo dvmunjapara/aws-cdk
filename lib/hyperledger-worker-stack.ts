@@ -21,16 +21,32 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     const { config } = props;
 
-    const apigatewayRole = new IAM.Role(this, 'apigateway-role', {
-      assumedBy: new IAM.ServicePrincipal('apigateway.amazonaws.com'),
-    });
-
     const queue = new sqs.Queue(this, 'HyperledgerWorkerQueue', {
       visibilityTimeout: cdk.Duration.minutes(5),
       fifo: true,
       deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
       fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID
     });
+
+    const apigatewayRole = new IAM.Role(this, "APIGWtoSQSExampleRole", {
+      assumedBy: new IAM.ServicePrincipal("apigateway.amazonaws.com"),
+      roleName: "APIGWtoSQSExampleRole",
+    });
+
+    /**
+     * create a policy statement that allows sending messages to the message queue
+     */
+    const policyStatement = new IAM.PolicyStatement({
+      actions: ["sqs:SendMessage"],
+      effect: IAM.Effect.ALLOW,
+      resources: [queue.queueArn],
+    });
+
+    const policy = new IAM.Policy(this, "SendMessagePolicy", {
+      statements: [policyStatement],
+    });
+
+    apigatewayRole.attachInlinePolicy(policy);
 
     queue.grantSendMessages(apigatewayRole);
 
@@ -101,7 +117,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       options: {
         credentialsRole: apigatewayRole,
         requestParameters: {
-          'integration.request.header.Content-Type': `'x-www-form-urlencoded'`,
+          'integration.request.header.Content-Type': `'application/x-www-form-urlencoded'`,
         },
         requestTemplates: {
           "application/json": `Action=SendMessage&MessageBody=$input.body`,
