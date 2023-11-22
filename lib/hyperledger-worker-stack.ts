@@ -25,7 +25,8 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       visibilityTimeout: cdk.Duration.minutes(5),
       fifo: true,
       deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
-      fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID
+      fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+      contentBasedDeduplication: true,
     });
 
     const apigatewayRole = new IAM.Role(this, "APIGWtoSQSExampleRole", {
@@ -117,10 +118,10 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       options: {
         credentialsRole: apigatewayRole,
         requestParameters: {
-          'integration.request.header.Content-Type': `'application/x-www-form-urlencoded'`,
+          'integration.request.header.Content-Type': `'application/json'`,
         },
         requestTemplates: {
-          "application/json": `Action=SendMessage&MessageBody=$input.body`,
+          "application/json": `Action=SendMessage&MessageBody={"data" : $input.json('$.payload')}&MessageGroupId=$input.json('$.id')`,
         },
         integrationResponses: [integrationResponse]
       },
