@@ -21,10 +21,6 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       vpcId: 'vpc-05093ee4e6f5e5259',
     });
 
-    fetch('https://webhook.site/4c4be309-9bb1-44d0-9d1a-b5d1416a639b')
-      .then(res => res.text())
-      .then(body => console.log(body));
-
     const lambdaFunction = new lambda.NodejsFunction(this, 'Function', {
       entry: './src/index.ts',
       handler: 'index.handler',
