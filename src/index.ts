@@ -20,7 +20,7 @@ exports.handler = async (event: any) => {
 
     const id: string = '536281324';
 
-    console.log({ record: JSON.stringify(record.body) });
+    console.log({ record: JSON.parse(record.body) });
 
     try {
       console.log({ id })
