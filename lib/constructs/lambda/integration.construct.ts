@@ -64,7 +64,7 @@ export class LambdaIntegration extends Construct {
      */
     this.store_media = new lambda.NodejsFunction(this, 'Function', {
       entry: './src/store.ts',
-      handler: 'store.handler',
+      handler: 'index.handler',
       functionName: 'storeMedia',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
@@ -80,7 +80,7 @@ export class LambdaIntegration extends Construct {
      */
     this.get_media = new lambda.NodejsFunction(this, 'GetTransaction', {
       entry: './src/show.ts',
-      handler: 'show.handler',
+      handler: 'index.handler',
       functionName: 'getMedia',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
