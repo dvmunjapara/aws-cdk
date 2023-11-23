@@ -4,12 +4,10 @@ exports.handler = async (event: any) => {
 
   for (const record of event.Records) {
 
-    const id: string = '536281324';
-
     const media = JSON.parse(record.body);
 
     try {
-      console.log({ id })
+      console.log({ media })
 
       const channel = await Channel();
 
