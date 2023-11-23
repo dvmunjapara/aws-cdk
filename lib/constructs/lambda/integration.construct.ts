@@ -19,6 +19,7 @@ export interface ILambdaIntegrationProps {
  * This Construct creates the integration options needed to attach to a REST API Method
  */
 export class LambdaIntegration extends Construct {
+
   store_media: lambda.NodejsFunction;
   get_media: lambda.NodejsFunction;
 
@@ -77,7 +78,7 @@ export class LambdaIntegration extends Construct {
      * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
      * that you would find on the Stack object.
      */
-    this.get_media = new lambda.NodejsFunction(this, 'Function', {
+    this.get_media = new lambda.NodejsFunction(this, 'GetTransaction', {
       entry: './src/show.ts',
       handler: 'show.handler',
       functionName: 'getMedia',
