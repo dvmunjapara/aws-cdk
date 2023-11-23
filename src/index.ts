@@ -9,7 +9,7 @@ exports.handler = async (event: any) => {
     const media = JSON.parse(record.body);
 
     try {
-      console.log({ media })
+      console.log(JSON.stringify(media))
 
       const channel = await Channel();
 
@@ -27,7 +27,9 @@ exports.handler = async (event: any) => {
       console.log({ responses: `Media ${media.id} stored` })
 
     } catch (e: any) {
-      console.log({ message: e.message });
+      const message = e.details && e.details[0] ? e.details[0].message.split(", ")[1] : e.message;
+
+      console.log({ error: message })
     }
   }
 };
