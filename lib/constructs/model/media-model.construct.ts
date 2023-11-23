@@ -125,7 +125,7 @@ export class MediaModel extends Construct {
         required: ['id'],
         properties: {
           id: {
-            type: apigw.JsonSchemaType.NUMBER
+            type: apigw.JsonSchemaType.STRING
           },
           mediaId: {
             type: apigw.JsonSchemaType.STRING

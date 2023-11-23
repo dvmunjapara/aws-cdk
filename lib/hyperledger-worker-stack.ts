@@ -57,6 +57,20 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       apiKeySourceType: ApiGW.ApiKeySourceType.HEADER,
     });
 
+    const apiKey = new ApiGW.ApiKey(this, 'HyperledgerWorkerApiKey');
+
+    const usagePlan = new ApiGW.UsagePlan(this, 'HyperledgerWorkerUsagePlan', {
+      name: 'HyperledgerWorkerUsagePlan',
+      apiStages: [
+        {
+          api: restApi,
+          stage: restApi.deploymentStage,
+        },
+      ],
+    });
+
+    usagePlan.addApiKey(apiKey);
+
     //Create a method options object with validations and transformations
     const apiMethodOptions = new ApiMethodOptions(
       this,
