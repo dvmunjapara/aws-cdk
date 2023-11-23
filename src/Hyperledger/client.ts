@@ -19,7 +19,6 @@ const grpcConnection = async function (): Promise<grpc.Client> {
 
 export async function Client(): Promise<Gateway> {
 
-
   const client = await grpcConnection();
 
   return connect({

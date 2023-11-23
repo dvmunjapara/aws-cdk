@@ -1,55 +1,28 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import {Construct} from 'constructs';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
-import { Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
+import {Runtime, Architecture} from 'aws-cdk-lib/aws-lambda';
 import * as ec2 from "aws-cdk-lib/aws-ec2"
 import {ConfigProps} from "./config";
 import {StackProps} from "aws-cdk-lib";
 import * as ApiGW from 'aws-cdk-lib/aws-apigateway';
 import * as IAM from 'aws-cdk-lib/aws-iam';
 import {sqsResponseTemplate} from "./templates/sqs-response.template";
+import {SQSApiGatewayRole} from './constructs/sqs-api-gateway-role.construct';
+import {ApiMethodOptions} from './constructs/api-method-options.construct';
+import {SQSIntegration} from "./constructs/sqs-integration.construct";
 
 type AwsEnvStackProps = StackProps & {
   config: Readonly<ConfigProps>;
 };
 
 export class HyperledgerWorkerStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: AwsEnvStackProps, ) {
+  constructor(scope: Construct, id: string, props: AwsEnvStackProps,) {
     super(scope, id, props);
 
-    const { config } = props;
-
-    const queue = new sqs.Queue(this, 'HyperledgerWorkerQueue', {
-      visibilityTimeout: cdk.Duration.minutes(5),
-      fifo: true,
-      deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
-      fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
-      contentBasedDeduplication: true,
-    });
-
-    const apigatewayRole = new IAM.Role(this, "APIGWtoSQSExampleRole", {
-      assumedBy: new IAM.ServicePrincipal("apigateway.amazonaws.com"),
-      roleName: "APIGWtoSQSExampleRole",
-    });
-
-    /**
-     * create a policy statement that allows sending messages to the message queue
-     */
-    const policyStatement = new IAM.PolicyStatement({
-      actions: ["sqs:SendMessage"],
-      effect: IAM.Effect.ALLOW,
-      resources: [queue.queueArn],
-    });
-
-    const policy = new IAM.Policy(this, "SendMessagePolicy", {
-      statements: [policyStatement],
-    });
-
-    apigatewayRole.attachInlinePolicy(policy);
-
-    queue.grantSendMessages(apigatewayRole);
+    const {config} = props;
 
     /*
     const sendMessageIntegration = new ApiGW.AwsIntegration({
@@ -57,7 +30,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       path: `${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}`,
       integrationHttpMethod: 'POST',
       options: {
-        credentialsRole: apigatewayRole,
+        credentialsRole: sqsApiGatewayRole,
         requestParameters: {
           'integration.request.header.Content-Type': `'application/json'`,
         },
@@ -96,14 +69,32 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       ]
     });*/
 
+    const queue = new sqs.Queue(this, 'HyperledgerWorkerQueue', {
+      visibilityTimeout: cdk.Duration.minutes(5),
+      fifo: true,
+      deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
+      fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+      contentBasedDeduplication: true,
+    });
 
-    const integrationResponse: ApiGW.IntegrationResponse = {
-      statusCode: "200",
-      responseTemplates: {
-        "application/json": sqsResponseTemplate,
-      },
-    };
+    const sqsApiGatewayRole = new SQSApiGatewayRole(
+      this,
+      "Api Gateway Role Construct",
+      {
+        messageQueue: queue,
+      }
+    );
 
+    const sqsIntegration = new SQSIntegration(
+      this,
+      "SQS Integration Construct",
+      {
+        messageQueue: queue,
+        apiGatewayRole: sqsApiGatewayRole.role,
+      }
+    );
+
+    //create the API in ApiGateway
     const restApi = new ApiGW.RestApi(this, "API Endpoint", {
       deployOptions: {
         stageName: "sandbox",
@@ -111,39 +102,21 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       restApiName: "APIGWtoSQSApi",
     });
 
-    const integration = new ApiGW.AwsIntegration({
-      service: "sqs",
-      path: `${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}`,
-      integrationHttpMethod: "POST",
-      options: {
-        credentialsRole: apigatewayRole,
-        requestParameters: {
-          'integration.request.header.Content-Type': `'application/x-www-form-urlencoded'`,
-        },
-        requestTemplates: {
-          "application/json": `Action=SendMessage&MessageBody={"data" : $input.json('$.payload')}&MessageGroupId=$input.json('$.id')`,
-        },
-        integrationResponses: [integrationResponse]
-      },
-    });
-
-    const methodResponse: ApiGW.MethodResponse = {
-      statusCode: "200",
-      responseModels: { "application/json": ApiGW.Model.EMPTY_MODEL },
-    };
-
-    const methodOptions: ApiGW.MethodOptions = {
-      methodResponses: [methodResponse],
-      operationName: 'store-transaction',
-      authorizationType: ApiGW.AuthorizationType.NONE,
-    }
+    //Create a method options object with validations and transformations
+    const apiMethodOptions = new ApiMethodOptions(
+      this,
+      "API Method Options Construct",
+      {
+        restApi: restApi,
+      }
+    );
 
     const resource = restApi.root.resourceForPath('/store-transaction');
 
     resource.addMethod(
       "POST",
-      integration,
-      methodOptions
+      sqsIntegration.integration,
+      apiMethodOptions.methodOptions
     );
 
     const vpc = ec2.Vpc.fromLookup(this, 'myVPC', {
