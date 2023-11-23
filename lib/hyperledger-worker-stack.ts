@@ -97,10 +97,6 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     lambdaIntegration.store_media.addEventSource(eventSource);
 
-    const getMediaSource = new ApiGW.LambdaRestApi(this, "Get Media", {
-      handler: lambdaIntegration.get_media,
-    });
-
     const getResource = restApi.root.resourceForPath("get-transaction");
     getResource.addResource("{id}")
       .addMethod("GET", new ApiGW.LambdaIntegration(lambdaIntegration.get_media));
