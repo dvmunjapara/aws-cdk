@@ -6,6 +6,7 @@ import {Runtime} from "aws-cdk-lib/aws-lambda";
 import * as cdk from "aws-cdk-lib";
 import {ConfigProps} from "../../config";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
+import {BundlingOptions} from "aws-cdk-lib/aws-lambda-nodejs/lib/types";
 
 /**
  * These are the properties expected by the SQSIntegration Construct
@@ -18,7 +19,8 @@ export interface ILambdaIntegrationProps {
  * This Construct creates the integration options needed to attach to a REST API Method
  */
 export class LambdaIntegration extends Construct {
-  store_media: lambda.NodejsFunction; // this will be used by the parent stack to combine with other Constructs
+  store_media: lambda.NodejsFunction;
+  get_media: lambda.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: ILambdaIntegrationProps) {
     super(scope, id);
@@ -31,6 +33,29 @@ export class LambdaIntegration extends Construct {
       vpcId: props.config.VPC_ID,
     });
 
+    const building: BundlingOptions = {
+      nodeModules: [
+        '@hyperledger/fabric-gateway',
+        'fs',
+        'path',
+        'crypto',
+        '@grpc/grpc-js'
+      ],
+      commandHooks: {
+        beforeBundling(inputDir: string, outputDir: string): string[] {
+          return [
+            `cp -r ${inputDir}/storage/certs ${outputDir}/certs`,
+          ];
+        },
+        afterBundling(inputDir: string, outputDir: string): string[] {
+          return [];
+        },
+        beforeInstall(inputDir: string, outputDir: string): string[] {
+          return [];
+        },
+      }
+    }
+
     /**
      * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
      * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
@@ -38,34 +63,29 @@ export class LambdaIntegration extends Construct {
      */
     this.store_media = new lambda.NodejsFunction(this, 'Function', {
       entry: './src/index.ts',
-      handler: 'index.handler',
+      handler: 'store.handler',
       functionName: 'storeMedia',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
       environment: props.config,
-      bundling: {
-        nodeModules: [
-          '@hyperledger/fabric-gateway',
-          'fs',
-          'path',
-          'crypto',
-          '@grpc/grpc-js'
-        ],
-        commandHooks: {
-          beforeBundling(inputDir: string, outputDir: string): string[] {
-            return [
-              `cp -r ${inputDir}/storage/certs ${outputDir}/certs`,
-            ];
-          },
-          afterBundling(inputDir: string, outputDir: string): string[] {
-            return [];
-          },
-          beforeInstall(inputDir: string, outputDir: string): string[] {
-            return [];
-          },
-        }
-      }
+      bundling: building
+    });
+
+    /**
+     * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
+     * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
+     * that you would find on the Stack object.
+     */
+    this.get_media = new lambda.NodejsFunction(this, 'Function', {
+      entry: './src/show.ts',
+      handler: 'show.handler',
+      functionName: 'getMedia',
+      runtime: Runtime.NODEJS_18_X,
+      timeout: cdk.Duration.minutes(5),
+      vpc: vpc,
+      environment: props.config,
+      bundling: building
     });
   }
 }
