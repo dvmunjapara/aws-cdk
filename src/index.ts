@@ -29,7 +29,10 @@ exports.handler = async (event: any) => {
     } catch (e: any) {
       const message = e.details && e.details[0] ? e.details[0].message.split(", ")[1] : e.message;
 
-      console.log({ error: message })
+      if (!message.includes("Media already exists")) {
+
+        throw new Error(message);
+      }
     }
   }
 };
