@@ -62,7 +62,7 @@ export class LambdaIntegration extends Construct {
      * that you would find on the Stack object.
      */
     this.store_media = new lambda.NodejsFunction(this, 'Function', {
-      entry: './src/index.ts',
+      entry: './src/store.ts',
       handler: 'store.handler',
       functionName: 'storeMedia',
       runtime: Runtime.NODEJS_18_X,
