@@ -1,8 +1,7 @@
 //Create an IAM Role for API Gateway to assume
-import { Stack, StackProps } from "aws-cdk-lib";
-import { Construct } from "constructs";
+import {Construct} from "constructs";
 import * as apigw from "aws-cdk-lib/aws-apigateway";
-import { MediaModel } from "./media-model.construct";
+import {MediaModel} from "../model/media-model.construct";
 
 /**
  * These are the properties expected by the ApiMethodOptions Construct
@@ -15,7 +14,7 @@ export interface IApiMethodOptionsProps {
  * This Construct creates the Api Gateway endpoint Request and Response that affronts the SQS integration.
  */
 export class ApiMethodOptions extends Construct {
-  readonly methodOptions: apigw.MethodOptions;
+  readonly storeMethodOptions: apigw.MethodOptions;
 
   constructor(scope: Construct, id: string, props: IApiMethodOptionsProps) {
     super(scope, id);
@@ -36,11 +35,12 @@ export class ApiMethodOptions extends Construct {
       responseModels: { "application/json": apigw.Model.EMPTY_MODEL },
     };
 
+
     /**
      * Create a validator for the API, apply that validation to the Request for the ContentType
      * of "application/json", and add the "passthrough" Response as Method Options for the API
      */
-    const methodOptions: apigw.MethodOptions = {
+    this.storeMethodOptions = {
       methodResponses: [methodResponse],
       operationName: "store-media",
       requestValidator: new apigw.RequestValidator(this, "body-validator", {
@@ -51,8 +51,7 @@ export class ApiMethodOptions extends Construct {
       requestModels: {
         "application/json": mediaModel.model,
       },
+      apiKeyRequired: true,
     };
-
-    this.methodOptions = methodOptions;
   }
 }

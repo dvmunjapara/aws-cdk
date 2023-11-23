@@ -1,6 +1,7 @@
 import {Client} from "./client";
+import {Contract} from "@hyperledger/fabric-gateway";
 
-export async function Channel(): Promise<any> {
+export async function Channel(): Promise<Contract> {
 
 
   const channel_name = process.env.HYPERLEDGER_CHANNEL || '';

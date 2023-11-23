@@ -4,7 +4,7 @@ import { Construct } from "constructs";
 import * as sqs from "aws-cdk-lib/aws-sqs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as apigw from "aws-cdk-lib/aws-apigateway";
-import { sqsResponseTemplate } from "../templates/sqs-response.template";
+import { sqsResponseTemplate } from "./templates/sqs-response.template";
 
 /**
  * These are the properties expected by the SQSIntegration Construct

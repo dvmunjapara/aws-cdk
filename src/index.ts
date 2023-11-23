@@ -6,12 +6,26 @@ exports.handler = async (event: any) => {
 
     const id: string = '536281324';
 
+    const media = JSON.parse(record.body);
+
     try {
       console.log({ id })
 
-      const contract = await Channel();
-      const resultBytes = await contract.evaluateTransaction("ReadMedia", id);
-      console.log({ data: ParseBuffer(resultBytes) });
+      const channel = await Channel();
+
+      let responses = await channel.submit(
+        "CreateMedia",
+        {
+          arguments: [
+            media.id,
+            JSON.stringify(media),
+          ]
+        }
+      );
+
+
+      console.log({ responses: `Media ${media.id} stored` })
+
     } catch (e: any) {
       console.log({ message: e.message });
     }
