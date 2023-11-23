@@ -39,7 +39,7 @@ export class LambdaIntegration extends Construct {
     this.store_media = new lambda.NodejsFunction(this, 'Function', {
       entry: './src/index.ts',
       handler: 'index.handler',
-      functionName: 'SqsMessageHandler',
+      functionName: 'storeMedia',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
