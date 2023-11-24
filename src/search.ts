@@ -3,16 +3,17 @@ import * as nano from 'nano';
 
 exports.handler = async (event: any) => {
 
-  console.log("request:", JSON.stringify(event.body));
-  console.log("request:", JSON.stringify(event.body.payload));
+  console.log(JSON.parse(event.body.payload));
 
   try {
 
+    const body = JSON.parse(event.body);
     const nano = require('nano')(process.env.COUCHDB_HOST);
     const db = nano.use(process.env.COUCHDB_DATABASE);
+    console.log(body.frames)
 
     const docs = await db.view("frames-doc", "frames-view", {
-      keys: JSON.parse(event.body.payload),
+      keys: body.frames,
       include_docs: true,
     });
 
