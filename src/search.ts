@@ -12,7 +12,7 @@ exports.handler = async (event: any) => {
     const db = nano.use(process.env.COUCHDB_DATABASE);
 
     const docs = await db.view("frames-doc", "frames-view", {
-      keys: event.body.payload,
+      keys: JSON.parse(event.body.payload),
       include_docs: true,
     });
 
