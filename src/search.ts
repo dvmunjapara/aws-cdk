@@ -3,8 +3,6 @@ import * as nano from 'nano';
 
 exports.handler = async (event: any) => {
 
-  console.log(JSON.parse(event.body.payload));
-
   try {
 
     const body = JSON.parse(event.body);
