@@ -3,7 +3,7 @@ import * as nano from 'nano';
 
 exports.handler = async (event: any) => {
 
-  console.log("request:", JSON.stringify(event.body.data.payload));
+  console.log("request:", JSON.stringify(event.body.payload));
 
   try {
 
@@ -11,7 +11,7 @@ exports.handler = async (event: any) => {
     const db = nano.use(process.env.COUCHDB_DATABASE);
 
     const docs = await db.view("frames-doc", "frames-view", {
-      keys: event.body.data.payload,
+      keys: event.body.payload,
       include_docs: true,
     });
 
