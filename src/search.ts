@@ -3,7 +3,8 @@ import * as nano from 'nano';
 
 exports.handler = async (event: any) => {
 
-  console.log("request:", JSON.stringify(event));
+  console.log("request:", JSON.stringify(event.body));
+  console.log("request:", JSON.stringify(event.body.payload));
 
   try {
 
