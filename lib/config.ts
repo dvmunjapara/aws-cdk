@@ -17,6 +17,8 @@ export type ConfigProps = {
   HYPERLEDGER_CHANNEL: string;
   HYPERLEDGER_CHAINCODE: string;
   VPC_ID: string;
+  COUCHDB_HOST: string;
+  COUCHDB_DATABASE: string;
 };
 
 // 3. Define a function to retrieve our env variables
@@ -32,4 +34,6 @@ export const getConfig = (): ConfigProps => ({
   HYPERLEDGER_CHANNEL: process.env.HYPERLEDGER_CHANNEL || "",
   HYPERLEDGER_CHAINCODE: process.env.HYPERLEDGER_CHAINCODE || "",
   VPC_ID: process.env.VPC_ID || "",
+  COUCHDB_HOST: process.env.COUCHDB_HOST || "",
+  COUCHDB_DATABASE: process.env.COUCHDB_DATABASE || "",
 });

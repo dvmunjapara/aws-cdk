@@ -20,8 +20,9 @@ export interface ILambdaIntegrationProps {
  */
 export class LambdaIntegration extends Construct {
 
-  store_media: lambda.NodejsFunction;
-  get_media: lambda.NodejsFunction;
+  store_transaction: lambda.NodejsFunction;
+  get_transaction: lambda.NodejsFunction;
+  search_transaction: lambda.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: ILambdaIntegrationProps) {
     super(scope, id);
@@ -62,7 +63,7 @@ export class LambdaIntegration extends Construct {
      * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
      * that you would find on the Stack object.
      */
-    this.store_media = new lambda.NodejsFunction(this, 'Function', {
+    this.store_transaction = new lambda.NodejsFunction(this, 'Function', {
       entry: './src/store.ts',
       handler: 'index.handler',
       functionName: 'storeMedia',
@@ -78,7 +79,7 @@ export class LambdaIntegration extends Construct {
      * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
      * that you would find on the Stack object.
      */
-    this.get_media = new lambda.NodejsFunction(this, 'GetTransaction', {
+    this.get_transaction = new lambda.NodejsFunction(this, 'GetTransaction', {
       entry: './src/show.ts',
       handler: 'index.handler',
       functionName: 'getMedia',
@@ -87,6 +88,26 @@ export class LambdaIntegration extends Construct {
       vpc: vpc,
       environment: props.config,
       bundling: building
+    });
+
+    /**
+     * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
+     * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
+     * that you would find on the Stack object.
+     */
+    this.search_transaction = new lambda.NodejsFunction(this, 'SearchTransaction', {
+      entry: './src/search.ts',
+      handler: 'index.handler',
+      functionName: 'searchTransaction',
+      runtime: Runtime.NODEJS_18_X,
+      timeout: cdk.Duration.minutes(5),
+      vpc: vpc,
+      environment: props.config,
+      bundling: {
+        nodeModules: [
+          'nano'
+        ],
+      }
     });
   }
 }

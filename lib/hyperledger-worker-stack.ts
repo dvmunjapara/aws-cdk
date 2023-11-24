@@ -95,10 +95,14 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     const eventSource = new lambdaEventSources.SqsEventSource(queue);
 
-    lambdaIntegration.store_media.addEventSource(eventSource);
+    lambdaIntegration.store_transaction.addEventSource(eventSource);
 
     const getResource = restApi.root.resourceForPath("get-transaction");
     getResource.addResource("{id}")
-      .addMethod("GET", new ApiGW.LambdaIntegration(lambdaIntegration.get_media));
+      .addMethod("GET", new ApiGW.LambdaIntegration(lambdaIntegration.get_transaction));
+
+    const searchResource = restApi.root.resourceForPath("search-transaction");
+    getResource
+      .addMethod("POST", new ApiGW.LambdaIntegration(lambdaIntegration.search_transaction));
   }
 }
