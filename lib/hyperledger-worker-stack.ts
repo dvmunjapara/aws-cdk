@@ -102,7 +102,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       .addMethod("GET", new ApiGW.LambdaIntegration(lambdaIntegration.get_transaction));
 
     const searchResource = restApi.root.resourceForPath("search-transaction");
-    getResource
+    searchResource
       .addMethod("POST", new ApiGW.LambdaIntegration(lambdaIntegration.search_transaction));
   }
 }
