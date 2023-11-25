@@ -91,19 +91,34 @@ export class MediaModel extends Construct {
           }
         },
         authenticatedFrames: {
-          type: apigw.JsonSchemaType.NUMBER
+          type: [
+            apigw.JsonSchemaType.NUMBER,
+            apigw.JsonSchemaType.NULL,
+          ]
         },
         weakGps: {
-          type: apigw.JsonSchemaType.NUMBER
+          type: [
+            apigw.JsonSchemaType.NUMBER,
+            apigw.JsonSchemaType.NULL,
+          ]
         },
         noData: {
-          type: apigw.JsonSchemaType.NUMBER
+          type: [
+            apigw.JsonSchemaType.NUMBER,
+            apigw.JsonSchemaType.NULL,
+          ]
         },
         totalConfidence: {
-          type: apigw.JsonSchemaType.NUMBER
+          type: [
+            apigw.JsonSchemaType.NUMBER,
+            apigw.JsonSchemaType.NULL,
+          ]
         },
         totalFrames: {
-          type: apigw.JsonSchemaType.NUMBER
+          type: [
+            apigw.JsonSchemaType.NUMBER,
+            apigw.JsonSchemaType.NULL,
+          ]
         },
         signedWith: {
           type: apigw.JsonSchemaType.STRING
