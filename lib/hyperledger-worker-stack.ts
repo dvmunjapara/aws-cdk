@@ -80,14 +80,6 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       }
     );
 
-    //Create a Resource Method, that combines the sqs integration, message validation and transformation
-    const storeResource = restApi.root.resourceForPath('/store-transaction');
-    storeResource.addMethod(
-      "POST",
-      sqsIntegration.integration,
-      apiMethodOptions.storeMethodOptions
-    );
-
     //Added SQS Event Source to Lambda
     const lambdaIntegration = new LambdaIntegration(this, "Lambda Integration", {
       config,
@@ -97,10 +89,21 @@ export class HyperledgerWorkerStack extends cdk.Stack {
 
     lambdaIntegration.store_transaction.addEventSource(eventSource);
 
+
+    //Create a Resource Method, that combines the sqs integration, message validation and transformation
+    const storeResource = restApi.root.resourceForPath('/store-transaction');
+    storeResource.addMethod(
+      "POST",
+      sqsIntegration.integration,
+      apiMethodOptions.storeMethodOptions
+    );
+
+    //Create a Resource Method, that fetches a transaction from the ledger
     const getResource = restApi.root.resourceForPath("get-transaction");
     getResource.addResource("{id}")
       .addMethod("GET", new ApiGW.LambdaIntegration(lambdaIntegration.get_transaction));
 
+    //Create a Resource Method, that searches for a transaction in the ledger
     const searchResource = restApi.root.resourceForPath("search-transaction");
     searchResource
       .addMethod("POST", new ApiGW.LambdaIntegration(lambdaIntegration.search_transaction));

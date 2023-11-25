@@ -35,6 +35,9 @@ export class LambdaIntegration extends Construct {
       vpcId: props.config.VPC_ID,
     });
 
+    /**
+     * Hyperledger Fabric Gateway requires the following node modules to be bundled
+     * */
     const building: BundlingOptions = {
       nodeModules: [
         '@hyperledger/fabric-gateway',
@@ -60,13 +63,12 @@ export class LambdaIntegration extends Construct {
 
     /**
      * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
-     * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
-     * that you would find on the Stack object.
+     * in the message queue.
      */
-    this.store_transaction = new lambda.NodejsFunction(this, 'Function', {
+    this.store_transaction = new lambda.NodejsFunction(this, 'StoreTransaction', {
       entry: './src/store.ts',
       handler: 'index.handler',
-      functionName: 'storeMedia',
+      functionName: 'storeTransaction',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
@@ -75,14 +77,12 @@ export class LambdaIntegration extends Construct {
     });
 
     /**
-     * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
-     * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
-     * that you would find on the Stack object.
+     * Create API Gateway for the Lambda Function to fetch the transaction
      */
     this.get_transaction = new lambda.NodejsFunction(this, 'GetTransaction', {
       entry: './src/show.ts',
       handler: 'index.handler',
-      functionName: 'getMedia',
+      functionName: 'getTransaction',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
@@ -91,9 +91,7 @@ export class LambdaIntegration extends Construct {
     });
 
     /**
-     * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
-     * in the message queue. *Note the use of "Stack.of" as Constructs do not have the "account" property
-     * that you would find on the Stack object.
+     * Create API Gateway for the Lambda Function to search the transaction
      */
     this.search_transaction = new lambda.NodejsFunction(this, 'SearchTransaction', {
       entry: './src/search.ts',
