@@ -1,13 +1,15 @@
 //Create an IAM Role for API Gateway to assume
-import { Construct } from "constructs";
+import {Construct} from "constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as sqs from "aws-cdk-lib/aws-sqs";
+import {ConfigProps} from "../../config";
 
 /**
  * These are the properties expected by the SQSApiGatewayRole Construct
- */ 
+ */
 export interface IApiGatewayRoleProps {
-    messageQueue: sqs.Queue;
+  messageQueue: sqs.Queue;
+  env: string;
 }
 
 /**
@@ -40,9 +42,9 @@ export class SQSApiGatewayRole extends Construct {
     /**
      * Create a role that can be assumed by API Gateway to integrate with the SQS Queue
      */
-    const role = new iam.Role(this, "APIGWtoSQSExampleRole", {
+    const role = new iam.Role(this, `APIGWSRole-${props.env}`, {
       assumedBy: new iam.ServicePrincipal("apigateway.amazonaws.com"),
-      roleName: "APIGWtoSQSExampleRole",
+      roleName: `APIGWSRole-${props.env}`,
     });
 
     /**

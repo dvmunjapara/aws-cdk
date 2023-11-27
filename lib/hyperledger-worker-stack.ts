@@ -35,6 +35,7 @@ export class HyperledgerWorkerStack extends cdk.Stack {
       "Api Gateway Role Construct",
       {
         messageQueue: queue,
+        env: config.ENV,
       }
     );
 
