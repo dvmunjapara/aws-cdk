@@ -17,7 +17,7 @@ exports.handler = async (event: any) => {
         "CreateMedia",
         {
           arguments: [
-            media.id,
+            media.id+'',
             JSON.stringify(media),
           ]
         }
