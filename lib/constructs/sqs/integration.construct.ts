@@ -48,7 +48,7 @@ export class SQSIntegration extends Construct {
           "'application/x-www-form-urlencoded'",
       },
       requestTemplates: {
-        "application/json": `Action=SendMessage&MessageBody=$input.json('$.data')&MessageGroupId=$input.json('$.id')`,
+        "application/json": `Action=SendMessage&MessageBody=$util.parseJson($input.json('$.data'))&MessageGroupId=$input.json('$.id')`,
       },
       integrationResponses: [integrationResponse],
     };
