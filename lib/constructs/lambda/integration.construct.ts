@@ -73,6 +73,7 @@ export class LambdaIntegration extends Construct {
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
       environment: props.config,
+      memorySize: 1024,
       bundling: building
     });
 
@@ -101,6 +102,7 @@ export class LambdaIntegration extends Construct {
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
       environment: props.config,
+      memorySize: 1024,
       bundling: {
         nodeModules: [
           'nano'
