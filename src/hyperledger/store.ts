@@ -1,4 +1,4 @@
-import {Channel} from "./Hyperledger"
+import {Channel} from "./client"
 
 exports.handler = async (event: any) => {
 
@@ -6,7 +6,6 @@ exports.handler = async (event: any) => {
 
     const media = JSON.parse(record.body);
 
-    console.log(media)
     try {
 
       const channel = await Channel();

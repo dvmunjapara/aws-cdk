@@ -1,4 +1,4 @@
-import {Channel, ParseBuffer} from "./Hyperledger";
+import {Channel, ParseBuffer} from "./client";
 
 exports.handler = async (event: any) => {
 

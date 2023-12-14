@@ -1,6 +1,3 @@
-import {Channel, ParseBuffer} from "./Hyperledger";
-import * as nano from 'nano';
-
 exports.handler = async (event: any) => {
 
   try {
@@ -8,7 +5,6 @@ exports.handler = async (event: any) => {
     const body = JSON.parse(event.body);
     const nano = require('nano')(process.env.COUCHDB_HOST);
     const db = nano.use(process.env.COUCHDB_DATABASE);
-    console.log(body.frames)
 
     const docs = await db.view("frames-doc", "frames-view", {
       keys: body.frames,

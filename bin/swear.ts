@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { HyperledgerWorkerStack } from '../lib/hyperledger-worker-stack';
+import { SwearWorkerStack } from '../lib/swear-worker-stack';
 import { getConfig } from "../lib/config";
 
 const app = new cdk.App();
 const config = getConfig();
 
-new HyperledgerWorkerStack(app, 'HyperledgerWorkerStack', {
+new SwearWorkerStack(app, `SwearWorkerStack-${config.ENV}`, {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */

@@ -2,7 +2,7 @@
   "name": "hyperledger-worker",
   "version": "0.1.0",
   "bin": {
-    "hyperledger-worker": "bin/hyperledger-worker.js"
+    "hyperledger-worker": "bin/swear.js"
   },
   "scripts": {
     "build": "tsc",
@@ -21,6 +21,7 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.473.0",
     "@hyperledger/fabric-gateway": "^1.4.0",
     "aws-cdk-lib": "2.110.1",
     "constructs": "^10.0.0",

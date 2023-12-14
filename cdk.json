@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/hyperledger-worker.ts",
+  "app": "npx ts-node --prefer-ts-exts bin/swear.ts",
   "watch": {
     "include": [
       "**"

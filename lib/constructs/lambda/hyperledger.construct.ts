@@ -11,27 +11,26 @@ import {BundlingOptions} from "aws-cdk-lib/aws-lambda-nodejs/lib/types";
 /**
  * These are the properties expected by the SQSIntegration Construct
  */
-export interface ILambdaIntegrationProps {
+export interface IHyperledgerLambdaIntegrationProps {
   config: ConfigProps;
 }
 
 /**
  * This Construct creates the integration options needed to attach to a REST API Method
  */
-export class LambdaIntegration extends Construct {
+export default class HyperledgerLambdaIntegration extends Construct {
 
   store_transaction: lambda.NodejsFunction;
   get_transaction: lambda.NodejsFunction;
   search_transaction: lambda.NodejsFunction;
 
-  constructor(scope: Construct, id: string, props: ILambdaIntegrationProps) {
+  constructor(scope: Construct, id: string, props: IHyperledgerLambdaIntegrationProps) {
     super(scope, id);
-
 
     /**
      * Create the VPC that will be used by the Lambda function
      */
-    const vpc = ec2.Vpc.fromLookup(this, 'myVPC', {
+    const vpc = ec2.Vpc.fromLookup(this, 'HyperledgerVPC', {
       vpcId: props.config.VPC_ID,
     });
 
@@ -66,7 +65,7 @@ export class LambdaIntegration extends Construct {
      * in the message queue.
      */
     this.store_transaction = new lambda.NodejsFunction(this, 'StoreTransaction', {
-      entry: './src/store.ts',
+      entry: './src/hyperledger/store.ts',
       handler: 'index.handler',
       functionName: 'storeTransaction',
       runtime: Runtime.NODEJS_18_X,
@@ -81,7 +80,7 @@ export class LambdaIntegration extends Construct {
      * Create API Gateway for the Lambda Function to fetch the transaction
      */
     this.get_transaction = new lambda.NodejsFunction(this, 'GetTransaction', {
-      entry: './src/show.ts',
+      entry: './src/hyperledger/show.ts',
       handler: 'index.handler',
       functionName: 'getTransaction',
       runtime: Runtime.NODEJS_18_X,
@@ -95,13 +94,16 @@ export class LambdaIntegration extends Construct {
      * Create API Gateway for the Lambda Function to search the transaction
      */
     this.search_transaction = new lambda.NodejsFunction(this, 'SearchTransaction', {
-      entry: './src/search.ts',
+      entry: './src/hyperledger/search.ts',
       handler: 'index.handler',
       functionName: 'searchTransaction',
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
-      environment: props.config,
+      environment: {
+        COUCHDB_HOST: props.config.COUCHDB_HOST,
+        COUCHDB_DATABASE: props.config.COUCHDB_DATABASE,
+      },
       memorySize: 1024,
       bundling: {
         nodeModules: [

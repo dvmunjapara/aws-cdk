@@ -19,6 +19,8 @@ export type ConfigProps = {
   VPC_ID: string;
   COUCHDB_HOST: string;
   COUCHDB_DATABASE: string;
+  BUCKET_NAME: string;
+  REKOGNITION_ENDPOINT: string;
 };
 
 // 3. Define a function to retrieve our env variables
@@ -36,4 +38,6 @@ export const getConfig = (): ConfigProps => ({
   VPC_ID: process.env.VPC_ID || "",
   COUCHDB_HOST: process.env.COUCHDB_HOST || "",
   COUCHDB_DATABASE: process.env.COUCHDB_DATABASE || "",
+  BUCKET_NAME: process.env.BUCKET_NAME || "",
+  REKOGNITION_ENDPOINT: process.env.REKOGNITION_ENDPOINT || "",
 });
