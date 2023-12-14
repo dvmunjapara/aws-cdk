@@ -9,6 +9,8 @@ exports.handler = async (event: any) => {
 
   const body = JSON.parse(event.body);
 
+  console.log(JSON.stringify({body: body}));
+
   const input = {
     MinConfidence: 20,
     JobTag: body.media_id,

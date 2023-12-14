@@ -6,7 +6,6 @@ import * as ApiGW from 'aws-cdk-lib/aws-apigateway';
 import Hyperledger from './constructs/hyperledger';
 import Rekognition from "./constructs/rekognition";
 
-
 type AwsEnvStackProps = StackProps & {
   config: Readonly<ConfigProps>;
 };
@@ -38,7 +37,6 @@ export class SwearWorkerStack extends cdk.Stack {
         },
       ],
     });
-
 
     usagePlan.addApiKey(apiKey);
 
