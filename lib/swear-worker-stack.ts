@@ -22,14 +22,14 @@ export class SwearWorkerStack extends cdk.Stack {
       deployOptions: {
         stageName: config.ENV,
       },
-      restApiName: "SwearApi",
+      restApiName: `SwearApi-${config.ENV}`,
       apiKeySourceType: ApiGW.ApiKeySourceType.HEADER,
     });
 
     const apiKey = new ApiGW.ApiKey(this, 'ApiKey');
 
     const usagePlan = new ApiGW.UsagePlan(this, 'ApiUsagePlan', {
-      name: 'ApiUsagePlan',
+      name: `ApiUsagePlan-${config.ENV}`,
       apiStages: [
         {
           api: restApi,
@@ -40,12 +40,12 @@ export class SwearWorkerStack extends cdk.Stack {
 
     usagePlan.addApiKey(apiKey);
 
-    new Hyperledger(this, 'Hyperledger', {
+    new Hyperledger(this, `Hyperledger`, {
       config: config,
       restApi: restApi,
     });
 
-    new Rekognition(this, 'Rekognition', {
+    new Rekognition(this, `Rekognition`, {
       config, restApi
     })
   }

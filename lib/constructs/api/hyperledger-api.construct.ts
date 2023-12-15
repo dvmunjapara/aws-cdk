@@ -28,6 +28,7 @@ export default class HyperledgerApi extends Construct {
       "Hyperledger API Method Options Construct",
       {
         restApi: restApi,
+        env: props.config.ENV,
       }
     );
 

@@ -30,7 +30,7 @@ export default class HyperledgerLambdaIntegration extends Construct {
     /**
      * Create the VPC that will be used by the Lambda function
      */
-    const vpc = ec2.Vpc.fromLookup(this, 'HyperledgerVPC', {
+    const vpc = ec2.Vpc.fromLookup(this, `HyperledgerVPC-${props.config.ENV}`, {
       vpcId: props.config.VPC_ID,
     });
 
@@ -64,10 +64,10 @@ export default class HyperledgerLambdaIntegration extends Construct {
      * Create the SQS Integration that allows POST method calls from Api Gateway to enqueue messages
      * in the message queue.
      */
-    this.store_transaction = new lambda.NodejsFunction(this, 'StoreTransaction', {
+    this.store_transaction = new lambda.NodejsFunction(this, `StoreTransaction`, {
       entry: './src/hyperledger/store.ts',
       handler: 'index.handler',
-      functionName: 'storeTransaction',
+      functionName: `storeTransaction-${props.config.ENV}`,
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
@@ -79,10 +79,10 @@ export default class HyperledgerLambdaIntegration extends Construct {
     /**
      * Create API Gateway for the Lambda Function to fetch the transaction
      */
-    this.get_transaction = new lambda.NodejsFunction(this, 'GetTransaction', {
+    this.get_transaction = new lambda.NodejsFunction(this, `GetTransaction`, {
       entry: './src/hyperledger/show.ts',
       handler: 'index.handler',
-      functionName: 'getTransaction',
+      functionName: `getTransaction-${props.config.ENV}`,
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
@@ -93,10 +93,10 @@ export default class HyperledgerLambdaIntegration extends Construct {
     /**
      * Create API Gateway for the Lambda Function to search the transaction
      */
-    this.search_transaction = new lambda.NodejsFunction(this, 'SearchTransaction', {
+    this.search_transaction = new lambda.NodejsFunction(this, `SearchTransaction`, {
       entry: './src/hyperledger/search.ts',
       handler: 'index.handler',
-      functionName: 'searchTransaction',
+      functionName: `searchTransaction-${props.config.ENV}`,
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,

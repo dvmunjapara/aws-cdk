@@ -22,6 +22,8 @@ interface IRekognitionLambdaIntegrationProps {
   role: iam.IRole;
 
   bucket: string;
+
+  env: string
 }
 
 /**
@@ -42,7 +44,7 @@ export class RekognitionLambdaIntegration extends Construct {
     this.submit_moderation = new lambda.NodejsFunction(this, 'submitModeration', {
       entry: './src/rekognition/submit_moderation.ts',
       handler: 'index.handler',
-      functionName: 'submitModeration',
+      functionName: `submitModeration-${props.env}`,
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       environment: {
@@ -74,6 +76,7 @@ export class RekognitionLambdaIntegration extends Construct {
     })
 
     const submitRekognitionJobPolicy = new iam.Policy(this, 'RekognitionJobPolicy', {
+      policyName: `RekognitionJobPolicy-${props.env}`,
       statements: [
         passRolePolicyStatement,
         submitRekognitionJobPolicyStatement
@@ -92,7 +95,7 @@ export class RekognitionLambdaIntegration extends Construct {
     this.process_moderation = new lambda.NodejsFunction(this, 'processModeration', {
       entry: './src/rekognition/process_moderation.ts',
       handler: 'index.handler',
-      functionName: 'processModeration',
+      functionName: `processModeration-${props.env}`,
       runtime: Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(5),
       memorySize: 1024,

@@ -18,13 +18,16 @@ export default class Rekognition extends Construct {
 
       const {config, restApi} = props;
 
-      const rekognitionSns = new RekognitionSns(this, "Rekognition SNS Construct")
+      const rekognitionSns = new RekognitionSns(this, "Rekognition SNS Construct", {
+        env: config.ENV
+      })
 
       const rekognitionRole = new AmazonRekognitionRole(
         this,
         "Rekognition Role Construct",
         {
-          snsTopic: rekognitionSns.moderationProcessedNotification
+          snsTopic: rekognitionSns.moderationProcessedNotification,
+          env: config.ENV,
         }
       );
 
@@ -34,6 +37,7 @@ export default class Rekognition extends Construct {
         resultNotification: rekognitionSns.moderationResultNotification,
         role: rekognitionRole.role,
         bucket: config.BUCKET_NAME,
+        env: config.ENV
       });
 
       //Create the SNS Subscription
@@ -46,7 +50,8 @@ export default class Rekognition extends Construct {
 
       new RekognitionApi(this, "Rekognition API Construct", {
         restApi: restApi,
-        submit_moderation: rekognitionLambdaIntegration.submit_moderation
+        submit_moderation: rekognitionLambdaIntegration.submit_moderation,
+        env: config.ENV
       });
     }
 }

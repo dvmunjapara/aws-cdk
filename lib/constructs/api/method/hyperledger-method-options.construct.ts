@@ -8,6 +8,7 @@ import {MediaModel} from "../../model/media-model.construct";
  */
 export interface IApiMethodOptionsProps {
   restApi: apigw.RestApi;
+  env: string
 }
 
 /**
@@ -24,6 +25,7 @@ export class HyperledgerApiMethodOptions extends Construct {
      */
     const mediaModel = new MediaModel(this, "Media Model Construct", {
       restApi: props.restApi,
+      env: props.env,
     });
 
     /**
@@ -32,7 +34,7 @@ export class HyperledgerApiMethodOptions extends Construct {
      */
     const methodResponse: apigw.MethodResponse = {
       statusCode: "200",
-      responseModels: { "application/json": apigw.Model.EMPTY_MODEL },
+      responseModels: {"application/json": apigw.Model.EMPTY_MODEL},
     };
 
 
@@ -43,7 +45,8 @@ export class HyperledgerApiMethodOptions extends Construct {
     this.storeMethodOptions = {
       methodResponses: [methodResponse],
       operationName: "store-media",
-      requestValidator: new apigw.RequestValidator(this, "store-media-validator", {
+      requestValidator: new apigw.RequestValidator(this, `store-media-validator`, {
+        requestValidatorName: `store-media-validator-${props.env}`,
         restApi: props.restApi,
         validateRequestBody: true,
       }),

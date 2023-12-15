@@ -8,6 +8,7 @@ import * as sns from "aws-cdk-lib/aws-sns";
  */
 export interface IApiGatewayRoleProps {
   snsTopic: sns.Topic;
+  env: string
 }
 
 /**
@@ -33,7 +34,8 @@ export class AmazonRekognitionRole extends Construct {
      * Create a policy to house policy statements statements. An example would be that we could also
      * add policy statements to allow sqs:ReceiveMessage, and sqs:DeleteMessage
      */
-    const policy = new iam.Policy(this, "AmazonRekognitionSNSPolicy", {
+    const policy = new iam.Policy(this, `AmazonRekognitionSNSPolicy`, {
+      policyName: `AmazonRekognitionSNSPolicy-${props.env}`,
       statements: [policyStatement],
     });
 
@@ -45,7 +47,7 @@ export class AmazonRekognitionRole extends Construct {
         new iam.ServicePrincipal("rekognition.amazonaws.com"),
         new iam.ServicePrincipal("sns.amazonaws.com")
       ),
-      roleName: `AmazonRekognitionSNS`,
+      roleName: `AmazonRekognitionSNS-${props.env}`,
     });
 
     /**

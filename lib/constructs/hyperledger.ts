@@ -21,21 +21,24 @@ class Hyperledger extends Construct {
     const {config, restApi} = props;
 
     //Create the SQS Queue
-    const HyperledgerWorkerQueue = new SQSApiGatewayQueue(this, 'HyperledgerWorkerQueue');
+    const HyperledgerWorkerQueue = new SQSApiGatewayQueue(this, `HyperledgerWorkerQueue`, {
+      env: config.ENV
+    });
 
     //Create a role assumed by the ApiGW Principal with Allow to send message to the SQS Queue
     const hyperledgerRole = new HyperledgerRole(
       this,
       "Hyperledger Role Construct",
       {
-        messageQueue: HyperledgerWorkerQueue.queue
+        messageQueue: HyperledgerWorkerQueue.queue,
+        env: config.ENV,
       }
     );
 
     //Create an integration that allows the API to expose the SQS Queue
     const hyperLedgerSqsIntegration = new HyperledgerSQSIntegration(
       this,
-      "HyperLedger SQS Integration Construct",
+      `HyperLedger SQS Integration Construct`,
       {
         messageQueue: HyperledgerWorkerQueue.queue,
         apiGatewayRole: hyperledgerRole.role,

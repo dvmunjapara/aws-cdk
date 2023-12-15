@@ -8,6 +8,7 @@ import * as sqs from "aws-cdk-lib/aws-sqs";
  */
 export interface IApiGatewayRoleProps {
   messageQueue: sqs.Queue;
+  env: string;
 }
 
 /**
@@ -33,7 +34,8 @@ export default class HyperledgerRole extends Construct {
      * Create a policy to house policy statements statements. An example would be that we could also
      * add policy statements to allow sqs:ReceiveMessage, and sqs:DeleteMessage
      */
-    const policy = new iam.Policy(this, "HyperledgerStackPolicy", {
+    const policy = new iam.Policy(this, `HyperledgerStackPolicy`, {
+      policyName: `HyperledgerStackPolicy-${props.env}`,
       statements: [policyStatement],
     });
 
@@ -42,7 +44,7 @@ export default class HyperledgerRole extends Construct {
      */
     const role = new iam.Role(this, `Hyperledger`, {
       assumedBy: new iam.ServicePrincipal("apigateway.amazonaws.com"),
-      roleName: `Hyperledger`,
+      roleName: `Hyperledger-${props.env}`,
     });
 
     /**

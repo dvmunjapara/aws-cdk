@@ -8,6 +8,7 @@ import * as apigw from "aws-cdk-lib/aws-apigateway";
  */
 export interface IMediaModelProps {
   restApi: apigw.RestApi;
+  env: string;
 }
 
 /**
@@ -134,7 +135,7 @@ export class MediaModel extends Construct {
       restApi: props.restApi,
       contentType: 'application/json',
       description: 'Validates a set of coordinates',
-      modelName: 'mediaModel',
+      modelName: `mediaModel-${props.env}`,
       schema: {
         type: apigw.JsonSchemaType.OBJECT,
         required: ['id'],

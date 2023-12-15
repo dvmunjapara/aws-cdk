@@ -8,6 +8,7 @@ import {ModerateContentModel} from "../../model/rekognition-model.construct";
  */
 export interface IApiMethodOptionsProps {
   restApi: apigw.RestApi;
+  env: string
 }
 
 /**
@@ -25,6 +26,7 @@ export default class RekognitionApiMethodOptions extends Construct {
      */
     const model = new ModerateContentModel(this, "Moderation Model Construct", {
       restApi: props.restApi,
+      env: props.env,
     });
 
     /**
@@ -43,7 +45,8 @@ export default class RekognitionApiMethodOptions extends Construct {
     this.submitMethodOptions = {
       methodResponses: [methodResponse],
       operationName: "submit-moderation",
-      requestValidator: new apigw.RequestValidator(this, "submit-moderation-validator", {
+      requestValidator: new apigw.RequestValidator(this, `submit-moderation-validator`, {
+        requestValidatorName: `submit-moderation-validator-${props.env}`,
         restApi: props.restApi,
         validateRequestBody: true,
       }),

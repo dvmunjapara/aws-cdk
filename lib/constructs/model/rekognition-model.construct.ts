@@ -8,6 +8,7 @@ import * as ApiGW from "aws-cdk-lib/aws-apigateway";
  */
 export interface IMediaModelProps {
   restApi: ApiGW.RestApi;
+  env: string
 }
 
 /**
@@ -27,7 +28,7 @@ export class ModerateContentModel extends Construct {
       restApi: props.restApi,
       contentType: 'application/json',
       description: 'Validates moderate content request body',
-      modelName: 'moderateContent',
+      modelName: `moderateContent-${props.env}`,
       schema: {
         type: ApiGW.JsonSchemaType.OBJECT,
         required: ['media_id', 'name'],

@@ -6,6 +6,7 @@ import RekognitionApiMethodOptions from "./method/rekognition-method-options.con
 interface IRekognitionApiProps {
   restApi: ApiGW.RestApi;
   submit_moderation: lambda.IFunction;
+  env: string
 }
 export default class RekognitionApi extends Construct {
 
@@ -19,6 +20,7 @@ export default class RekognitionApi extends Construct {
         "Rekognition API Method Options Construct",
         {
           restApi: restApi,
+          env: props.env
         }
       );
 
