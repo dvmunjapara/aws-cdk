@@ -26,7 +26,7 @@ export class SwearWorkerStack extends cdk.Stack {
       apiKeySourceType: ApiGW.ApiKeySourceType.HEADER,
     });
 
-    const apiKey = new ApiGW.ApiKey(this, 'ApiKey');
+    const apiKey = new ApiGW.ApiKey(this, `ApiKey-${config.ENV}`);
 
     const usagePlan = new ApiGW.UsagePlan(this, 'ApiUsagePlan', {
       name: `ApiUsagePlan-${config.ENV}`,
