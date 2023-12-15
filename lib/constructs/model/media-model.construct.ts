@@ -135,7 +135,7 @@ export class MediaModel extends Construct {
       restApi: props.restApi,
       contentType: 'application/json',
       description: 'Validates a set of coordinates',
-      modelName: `mediaModel-${props.env}`,
+      modelName: `mediaModel${props.env}`,
       schema: {
         type: apigw.JsonSchemaType.OBJECT,
         required: ['id'],
