@@ -7,13 +7,6 @@ exports.handler = async (event: any) => {
 
     const body = JSON.parse(event.body);
 
-    console.log({
-      keys: body.frames,
-      db: process.env.COUCHDB_DATABASE,
-      host: process.env.COUCHDB_HOST
-    });
-
-
     const nano = require('nano')(process.env.COUCHDB_HOST);
 
     const db = nano.use(process.env.COUCHDB_DATABASE);
@@ -25,7 +18,7 @@ exports.handler = async (event: any) => {
 
     let found = false;
 
-    const frameChunks = data.frames.reduce((resultArray: string[][], item: string, index: number) => {
+    const frameChunks = body.frames.reduce((resultArray: string[][], item: string, index: number) => {
       const chunkIndex = Math.floor(index/200)
 
       if(!resultArray[chunkIndex]) {
