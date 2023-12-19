@@ -11,7 +11,6 @@ exports.handler = async (event: any) => {
 
     const db = nano.use(process.env.COUCHDB_DATABASE);
 
-
     let data: any = []
 
     let count = 0;
