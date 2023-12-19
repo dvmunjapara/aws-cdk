@@ -25,8 +25,20 @@ exports.handler = async (event: any) => {
 
     let found = false;
 
+    const frameChunks = data.frames.reduce((resultArray: string[][], item: string, index: number) => {
+      const chunkIndex = Math.floor(index/200)
+
+      if(!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = [] // start a new chunk
+      }
+
+      resultArray[chunkIndex].push(item)
+
+      return resultArray
+    }, []);
+
     await (async () => {
-      for await (const result of body.frames.map((frame: any) => {
+      for await (const result of frameChunks.map((frame: any) => {
         return searchFromCouchDB(db, frame);
       })) {
 
@@ -66,7 +78,7 @@ exports.handler = async (event: any) => {
 const searchFromCouchDB = async function (db: any, frame: string) {
 
   return await db.view("frames-doc", "frames-view", {
-    key: frame,
+    keys: frame,
     include_docs: true,
   });
 
