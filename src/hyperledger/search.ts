@@ -12,30 +12,37 @@ exports.handler = async (event: any) => {
       host: process.env.COUCHDB_HOST
     });
 
+    let data: any = []
 
-    let promiss = [];
-    for (const frame of body.frames) {
+    let count = 0;
 
-      promiss.push(search(frame))
+    let found = false;
 
-    }
+    await (async () => {
+      for await (const res of body.frames.map((frame: any) => {
+        return searchFromCouchDB(frame);
+      })) {
 
-    const docs = await Promise.all(promiss);
+        if (res.rows.length) {
 
-    if (docs) {
+          data.push(res.rows);
+          found = true;
+        }
 
-      return {
-        statusCode: 200,
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({data: docs}),
+        if (found) {
+          count++;
+
+          if (count > 10) {
+            break;
+          }
+        }
       }
-    }
-
+    })()
 
     return {
       statusCode: 200,
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({data: []}),
+      body: JSON.stringify({data}),
     }
 
   } catch (e: any) {
@@ -49,13 +56,13 @@ exports.handler = async (event: any) => {
   }
 
 };
-const search = async function (frame: string) {
+const searchFromCouchDB = async function (frame: string) {
 
   const nano = require('nano')(process.env.COUCHDB_HOST);
 
   const db = nano.use(process.env.COUCHDB_DATABASE);
 
-  return  await db.view("frames-doc", "frames-view", {
+  return await db.view("frames-doc", "frames-view", {
     key: frame,
     include_docs: true,
   });
