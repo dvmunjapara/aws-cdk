@@ -1,4 +1,5 @@
 import {json} from "node:stream/consumers";
+import {DocumentScope} from "nano";
 
 exports.handler = async (event: any) => {
 
@@ -12,6 +13,12 @@ exports.handler = async (event: any) => {
       host: process.env.COUCHDB_HOST
     });
 
+
+    const nano = require('nano')(process.env.COUCHDB_HOST);
+
+    const db = nano.use(process.env.COUCHDB_DATABASE);
+
+
     let data: any = []
 
     let count = 0;
@@ -19,13 +26,13 @@ exports.handler = async (event: any) => {
     let found = false;
 
     await (async () => {
-      for await (const res of body.frames.map((frame: any) => {
-        return searchFromCouchDB(frame);
+      for await (const result of body.frames.map((frame: any) => {
+        return searchFromCouchDB(db, frame);
       })) {
 
-        if (res.rows.length) {
+        if (result.rows.length) {
 
-          data.push(res.rows);
+          data = [...data, ...result.rows]
           found = true;
         }
 
@@ -56,11 +63,7 @@ exports.handler = async (event: any) => {
   }
 
 };
-const searchFromCouchDB = async function (frame: string) {
-
-  const nano = require('nano')(process.env.COUCHDB_HOST);
-
-  const db = nano.use(process.env.COUCHDB_DATABASE);
+const searchFromCouchDB = async function (db: any, frame: string) {
 
   return await db.view("frames-doc", "frames-view", {
     key: frame,
