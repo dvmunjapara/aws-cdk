@@ -37,7 +37,7 @@ export default class HyperledgerLambdaIntegration extends Construct {
     /**
      * Hyperledger Fabric Gateway requires the following node modules to be bundled
      * */
-    const building: BundlingOptions = {
+    const bundling: BundlingOptions = {
       nodeModules: [
         '@hyperledger/fabric-gateway',
         'fs',
@@ -73,7 +73,7 @@ export default class HyperledgerLambdaIntegration extends Construct {
       vpc: vpc,
       environment: props.config,
       memorySize: 1024,
-      bundling: building
+      bundling: bundling
     });
 
     /**
@@ -87,7 +87,7 @@ export default class HyperledgerLambdaIntegration extends Construct {
       timeout: cdk.Duration.minutes(5),
       vpc: vpc,
       environment: props.config,
-      bundling: building
+      bundling: bundling
     });
 
     /**
