@@ -52,7 +52,7 @@ exports.handler = async (event: any) => {
     return {
       statusCode: 404,
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({error: "No transaction found"}),
+      body: JSON.stringify({error: e}),
     };
   }
 };
