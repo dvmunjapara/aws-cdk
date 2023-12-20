@@ -43,7 +43,7 @@ exports.handler = async (event: any) => {
     return {
       statusCode: 200,
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({data: result.rows || []}),
+      body: JSON.stringify({data: result?.rows || []}),
     }
 
   } catch (e: any) {
