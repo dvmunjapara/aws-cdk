@@ -53,7 +53,7 @@ export class HyperledgerApiMethodOptions extends Construct {
       requestModels: {
         "application/json": mediaModel.model,
       },
-      apiKeyRequired: true,
+      apiKeyRequired: false, //temp
     };
   }
 }
