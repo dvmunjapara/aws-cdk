@@ -38,7 +38,12 @@ exports.handler = async (event: any) => {
 
     const ids = data.map((item: any) => item.id).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
 
-    const result = await getMediaById(db, ids);
+    let result: any = [];
+
+    if (ids) {
+
+      result = await getMediaById(db, ids);
+    }
 
     return {
       statusCode: 200,
@@ -52,7 +57,7 @@ exports.handler = async (event: any) => {
     return {
       statusCode: 404,
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({error: e}),
+      body: JSON.stringify({error: "No transaction found"}),
     };
   }
 };
