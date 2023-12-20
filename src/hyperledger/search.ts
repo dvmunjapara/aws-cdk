@@ -40,7 +40,7 @@ exports.handler = async (event: any) => {
 
     let result: any = [];
 
-    if (ids) {
+    if (ids.length) {
 
       result = await getMediaById(db, ids);
     }
