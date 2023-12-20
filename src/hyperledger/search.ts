@@ -14,7 +14,7 @@ exports.handler = async (event: any) => {
     let data: any = []
 
     const frameChunks = body.frames.reduce((resultArray: string[][], item: string, index: number) => {
-      const chunkIndex = Math.floor(index / 450)
+      const chunkIndex = Math.floor(index / 1000)
 
       if (!resultArray[chunkIndex]) {
         resultArray[chunkIndex] = [] // start a new chunk
