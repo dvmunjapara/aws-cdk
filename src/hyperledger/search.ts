@@ -40,10 +40,12 @@ exports.handler = async (event: any) => {
 
     const result = await getMediaById(db, ids);
 
+    const media = result.rows ? result.rows.map((item: any) => item.doc) : [];
+
     return {
       statusCode: 200,
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({data: result.rows || []}),
+      body: JSON.stringify({data: media}),
     }
 
   } catch (e: any) {
