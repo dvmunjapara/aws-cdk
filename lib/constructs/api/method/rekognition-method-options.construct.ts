@@ -53,7 +53,7 @@ export default class RekognitionApiMethodOptions extends Construct {
       requestModels: {
         "application/json": model.model,
       },
-      apiKeyRequired: true,
+      apiKeyRequired: false //temp
     };
   }
 }
