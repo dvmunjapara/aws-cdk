@@ -8,8 +8,6 @@ exports.handler = async (event: any) => {
 
     try {
 
-      console.log('id', media.id);
-
       const channel = await Channel();
 
       let responses = await channel.submit(

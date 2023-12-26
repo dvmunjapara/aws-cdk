@@ -13,6 +13,7 @@ exports.handler = async (event: any) => {
 
     let data: any = []
 
+    console.log({frames: body.frames})
     const frameChunks = body.frames.reduce((resultArray: string[][], item: string, index: number) => {
       const chunkIndex = Math.floor(index / 1000)
 
